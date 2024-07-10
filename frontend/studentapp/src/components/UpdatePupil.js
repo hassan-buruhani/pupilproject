@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-// import './Form.css'; // Import the CSS file
+import './Form.css'; // Import the CSS file
 
 const UpdatePupil = ({ token }) => {
   const { id } = useParams(); // Get the pupil ID from the URL
@@ -19,6 +19,8 @@ const UpdatePupil = ({ token }) => {
   });
   const [classes, setClasses] = useState([]);
   const [guardians, setGuardians] = useState([]);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,6 +69,11 @@ const UpdatePupil = ({ token }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!pupil.first_name || !pupil.last_name || !pupil.date_of_birth || !pupil.gender || !pupil.address || !pupil.nida_id) {
+      setError('All fields except current class and picture are required');
+      return;
+    }
+
     const formData = new FormData();
     for (const key in pupil) {
       if (pupil[key]) {
@@ -77,16 +84,19 @@ const UpdatePupil = ({ token }) => {
       await axios.put(`http://localhost:8000/api/pupils/${id}/`, formData, {
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' },
       });
-      alert('Pupil updated successfully');
+      setSuccess('Pupil updated successfully');
+      setError('');
     } catch (error) {
-      console.error(error);
-      alert('Error updating pupil');
+      setError('Error updating pupil');
+      setSuccess('');
     }
   };
 
   return (
     <div className="form-container">
       <h2>Update Pupil</h2>
+      {error && <div className="error">{error}</div>}
+      {success && <div className="success">{success}</div>}
       <form onSubmit={handleSubmit}>
         <div>
           <label>First Name:</label>

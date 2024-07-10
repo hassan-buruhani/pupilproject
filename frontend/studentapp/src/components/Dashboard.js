@@ -46,7 +46,7 @@ const Dashboard = ({ token }) => {
           </div>
           <div className="manage-link">
             <h3>Update Pupil</h3>
-            <Link to="/pupilupdate">Update Pupil</Link>
+            <Link to="/update-pupil">Update Pupil</Link>
           </div>
           <div className="manage-link">
             <h3>Register Guardian</h3>

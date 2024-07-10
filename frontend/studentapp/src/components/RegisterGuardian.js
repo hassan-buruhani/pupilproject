@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './Form.css'; // Import the CSS file
 
 const RegisterGuardian = ({ token }) => {
   const [guardian, setGuardian] = useState({
@@ -12,6 +13,8 @@ const RegisterGuardian = ({ token }) => {
     pupil: '',
   });
   const [pupils, setPupils] = useState([]);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   useEffect(() => {
     const fetchPupils = async () => {
@@ -32,20 +35,28 @@ const RegisterGuardian = ({ token }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!guardian.name || !guardian.age || !guardian.gender || !guardian.phone_number || !guardian.nida_id || !guardian.relationship || !guardian.pupil) {
+      setError('All fields are required');
+      return;
+    }
+
     try {
       await axios.post('http://localhost:8000/api/guardians/', guardian, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      alert('Guardian registered successfully');
+      setSuccess('Guardian registered successfully');
+      setError('');
     } catch (error) {
-      console.error(error);
-      alert('Error registering guardian');
+      setError('Error registering guardian');
+      setSuccess('');
     }
   };
 
   return (
-    <div>
+    <div className="form-container">
       <h2>Register Guardian</h2>
+      {error && <div className="error">{error}</div>}
+      {success && <div className="success">{success}</div>}
       <form onSubmit={handleSubmit}>
         <div>
           <label>Name:</label>

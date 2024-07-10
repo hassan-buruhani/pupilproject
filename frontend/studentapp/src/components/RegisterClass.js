@@ -1,42 +1,53 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import './Form.css';  // Import the CSS file
 
 const RegisterClass = ({ token }) => {
-  const [classInfo, setClassInfo] = useState({
+  const [classData, setClassData] = useState({
     name: '',
     class_teacher: '',
   });
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const handleChange = (e) => {
-    setClassInfo({
-      ...classInfo,
+    setClassData({
+      ...classData,
       [e.target.name]: e.target.value,
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!classData.name || !classData.class_teacher) {
+      setError('All fields are required');
+      return;
+    }
+
     try {
-      await axios.post('http://localhost:8000/api/classes/', classInfo, {
-        headers: { Authorization: `Bearer ${token}` }
+      await axios.post('http://localhost:8000/api/classes/', classData, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-      alert('Class registered successfully');
+      setSuccess('Class registered successfully');
+      setError('');
     } catch (error) {
-      console.error(error);
-      alert('Error registering class');
+      setError('Error registering class');
+      setSuccess('');
     }
   };
 
   return (
-    <div>
+    <div className="form-container">
       <h2>Register Class</h2>
+      {error && <div className="error">{error}</div>}
+      {success && <div className="success">{success}</div>}
       <form onSubmit={handleSubmit}>
         <div>
-          <label>Class Name:</label>
+          <label>Name:</label>
           <input
             type="text"
             name="name"
-            value={classInfo.name}
+            value={classData.name}
             onChange={handleChange}
             required
           />
@@ -46,7 +57,7 @@ const RegisterClass = ({ token }) => {
           <input
             type="text"
             name="class_teacher"
-            value={classInfo.class_teacher}
+            value={classData.class_teacher}
             onChange={handleChange}
             required
           />
